@@ -1,4 +1,4 @@
-// DOM Elements
+// DOM Elements - Selectors for main navigation and content elements
 const nav = document.querySelector('nav');
 const sections = document.querySelectorAll('main section');
 const commentForm = document.getElementById('commentForm');
@@ -6,16 +6,17 @@ const commentList = document.getElementById('commentList');
 const errorElement = document.getElementById('error');
 const menuToggle = document.querySelector('.menu-toggle');
 
-// Constants
-const SCROLL_OFFSET = 100;
-const SCROLL_TO_TOP_THRESHOLD = 300;
-const ANIMATION_DURATION = 800;
-const SCROLL_EASING = 0.1;
+// Constants - Configuration values for scroll behavior and animations
+const SCROLL_OFFSET = 100; // Additional space above sections when scrolling
+const SCROLL_TO_TOP_THRESHOLD = 300; // Scroll position to show "back to top" button
+const ANIMATION_DURATION = 800; // Duration of smooth scroll animation in milliseconds
+const SCROLL_EASING = 0.1; // Easing factor for smooth scrolling
 
 /**
  * Smoothly scrolls to a target element with easing animation
+ * Uses requestAnimationFrame for smooth performance
  * @param {HTMLElement} target - Target element to scroll to
- * @param {number} offset - Additional offset from the top
+ * @param {number} offset - Additional offset from the top to account for fixed header
  */
 function smoothScrollTo(target, offset = 0) {
     const startPosition = window.scrollY;
@@ -45,6 +46,7 @@ function smoothScrollTo(target, offset = 0) {
 /**
  * Generates navigation menu items dynamically based on section data
  * Creates list items with links for each section using their h2 text or data-name attribute
+ * Handles click events for smooth scrolling and active state management
  */
 function generateNavigation() {
     // Get or create the navigation list
@@ -104,6 +106,7 @@ function generateNavigation() {
  * - Smooth scrolling to sections
  * - Active state management
  * - Mobile menu toggle
+ * Handles both desktop and mobile navigation interactions
  */
 function setupNavigation() {
     // Generate navigation items
@@ -133,6 +136,8 @@ function setupNavigation() {
 /**
  * Tracks and updates the active section based on scroll position
  * Updates navigation highlight and section visibility
+ * Uses requestAnimationFrame for performance optimization
+ * Considers viewport position to determine active section
  */
 function handleActiveSection() {
     function updateActiveSection() {
@@ -177,6 +182,7 @@ function handleActiveSection() {
 /**
  * Handles comment form submission and validation
  * Validates input fields and adds new comments to the list
+ * Includes error handling and form reset functionality
  */
 function handleCommentForm() {
     if (!commentForm) return;
@@ -208,8 +214,9 @@ function handleCommentForm() {
 
 /**
  * Validates email format using regex
+ * Ensures email contains @ symbol and valid domain
  * @param {string} email - Email address to validate
- * @returns {boolean} - True if email is valid
+ * @returns {boolean} - True if email is valid, false otherwise
  */
 function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -217,6 +224,7 @@ function isValidEmail(email) {
 
 /**
  * Displays error messages with fade animation
+ * Shows error for 3 seconds with smooth fade in/out
  * @param {string} message - Error message to display
  */
 function showError(message) {
@@ -234,6 +242,8 @@ function showError(message) {
 
 /**
  * Creates and adds a new comment to the comment list
+ * Formats comment with name, email, and timestamp
+ * Includes animation for new comment appearance
  * @param {string} name - Commenter's name
  * @param {string} email - Commenter's email
  * @param {string} comment - Comment text
@@ -282,14 +292,14 @@ function addComment(name, email, comment) {
     });
 }
 
-// Scroll to Top Button
+// Initialize scroll to top button
 const scrollTopBtn = document.createElement('button');
 scrollTopBtn.className = 'scroll-top';
 scrollTopBtn.innerHTML = '↑';
 scrollTopBtn.setAttribute('aria-label', 'Scroll to top');
 document.body.appendChild(scrollTopBtn);
 
-// Show/hide scroll to top button with smooth transition
+// Show/hide scroll to top button based on scroll position
 let scrollTimeout;
 window.addEventListener('scroll', () => {
     clearTimeout(scrollTimeout);
@@ -302,7 +312,7 @@ window.addEventListener('scroll', () => {
     }, 100);
 });
 
-// Smooth scroll to top with easing
+// Smooth scroll to top with easing animation
 scrollTopBtn.addEventListener('click', () => {
     const startPosition = window.scrollY;
     const startTime = performance.now();
@@ -326,7 +336,7 @@ scrollTopBtn.addEventListener('click', () => {
     requestAnimationFrame(scrollToTop);
 });
 
-// Initialize everything when DOM is loaded
+// Initialize all functionality when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
     setupNavigation();
     handleActiveSection();

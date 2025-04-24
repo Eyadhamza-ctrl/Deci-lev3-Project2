@@ -3,6 +3,7 @@ html {
     scroll-padding-top: 100px; /* Adjust this value based on your header height */
 }
 
+/* Base styles and variables */
 :root {
     --primary-color: #2563eb;
     --secondary-color: #3b82f6;
@@ -20,6 +21,7 @@ html {
     --gradient-6: linear-gradient(270deg, #34d399, #10b981);
 }
 
+/* Global styles */
 body {
     margin: 0;
     padding: 0;
@@ -32,7 +34,7 @@ body {
     min-height: 100vh;
 }
 
-/* Animated Background Shapes */
+/* Background decorative circles animation */
 body::before,
 body::after,
 .background-circle-1,
@@ -213,7 +215,7 @@ nav ul li.active a {
     background: rgba(37, 99, 235, 0.1);
 }
 
-/* Mobile Menu Toggle */
+/* Mobile menu toggle styles */
 .menu-toggle {
     display: none;
     flex-direction: column;
@@ -258,7 +260,7 @@ nav ul li.active a {
     transform: translateY(-13px) rotate(-45deg);
 }
 
-/* Scroll to Top Button */
+/* Scroll to top button styles */
 .scroll-top {
     position: fixed;
     bottom: 30px;
@@ -318,7 +320,7 @@ nav ul li.active a {
     opacity: 1;
 }
 
-/* Main content */
+/* Main content section styles */
 main {
     margin-top: 80px;
     padding: 1.5rem;
@@ -327,7 +329,7 @@ main {
     margin-right: auto;
 }
 
-/* Section styles */
+/* Individual section styles */
 section {
     background-color: var(--white);
     padding: 1.5rem;
@@ -536,8 +538,9 @@ h3 {
     margin-bottom: 1rem;
 }
 
-/* Responsive design */
+/* Responsive design breakpoints */
 @media (max-width: 768px) {
+    /* Mobile navigation styles */
     .menu-toggle {
         display: flex;
     }
@@ -636,6 +639,7 @@ h3 {
 }
 
 @media (max-width: 480px) {
+    /* Small screen adjustments */
     body {
         font-size: 14px;
     }
