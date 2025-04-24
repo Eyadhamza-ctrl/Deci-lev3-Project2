@@ -16,43 +16,24 @@ console.log('DOM Elements:', {
 });
 
 // Constants
-const SCROLL_OFFSET = 80;
+const SCROLL_OFFSET = 100;
 const SCROLL_TO_TOP_THRESHOLD = 300;
 const ANIMATION_DURATION = 300;
 
 // Navigation and Scrolling
 function setupNavigation() {
-    // Handle desktop navigation
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
+    $(document).ready(function() {
+        $('nav a').on('click', function(e) {
             e.preventDefault();
-            const targetId = link.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            
-            if (targetSection) {
-                // Calculate scroll position with proper offset
-                const navHeight = nav.offsetHeight;
-                const sectionTop = targetSection.offsetTop;
-                const scrollPosition = sectionTop - navHeight - SCROLL_OFFSET;
-                
-                // Scroll to section
-                window.scrollTo({
-                    top: scrollPosition,
-                    behavior: 'smooth'
-                });
-                
-                // Update active section
-                document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active'));
-                link.parentElement.classList.add('active');
-                
-                // Close mobile menu if open
-                if (nav.classList.contains('active')) {
-                    nav.classList.remove('active');
-                    menuToggle.classList.remove('active');
-                }
-            }
+            var target = $(this).attr('href');
+            var navHeight = $('nav').outerHeight();
+
+            $('html, body').animate({
+                scrollTop: $(target).offset().top - navHeight
+            }, 800);
         });
     });
+}
 
     // Handle mobile menu toggle
     if (menuToggle) {
@@ -73,7 +54,6 @@ function setupNavigation() {
             }
         });
     }
-}
 
 // Active Section Tracking
 function handleActiveSection() {
