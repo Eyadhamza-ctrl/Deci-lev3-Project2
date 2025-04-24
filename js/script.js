@@ -5,32 +5,74 @@ const navLinks = document.querySelectorAll('nav ul li a');
 const commentForm = document.getElementById('commentForm');
 const commentList = document.getElementById('commentList');
 const errorElement = document.getElementById('error');
+const menuToggle = document.querySelector('.menu-toggle');
 
 // Debug logging
 console.log('DOM Elements:', {
     commentForm,
     commentList,
-    errorElement
+    errorElement,
+    menuToggle
 });
 
 // Constants
-const SCROLL_OFFSET = 100;
+const SCROLL_OFFSET = 80;
 const SCROLL_TO_TOP_THRESHOLD = 300;
 const ANIMATION_DURATION = 300;
 
 // Navigation and Scrolling
 function setupNavigation() {
-    $(document).ready(function() {
-        $('nav a').on('click', function(e) {
+    // Handle desktop navigation
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
             e.preventDefault();
-            var target = $(this).attr('href');
-            var navHeight = $('nav').outerHeight();
+            const targetId = link.getAttribute('href');
+            const targetSection = document.querySelector(targetId);
             
-            $('html, body').animate({
-                scrollTop: $(target).offset().top - navHeight
-            }, 800);
+            if (targetSection) {
+                // Calculate scroll position with proper offset
+                const navHeight = nav.offsetHeight;
+                const sectionTop = targetSection.offsetTop;
+                const scrollPosition = sectionTop - navHeight - SCROLL_OFFSET;
+                
+                // Scroll to section
+                window.scrollTo({
+                    top: scrollPosition,
+                    behavior: 'smooth'
+                });
+                
+                // Update active section
+                document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active'));
+                link.parentElement.classList.add('active');
+                
+                // Close mobile menu if open
+                if (nav.classList.contains('active')) {
+                    nav.classList.remove('active');
+                    menuToggle.classList.remove('active');
+                }
+            }
         });
     });
+
+    // Handle mobile menu toggle
+    if (menuToggle) {
+        menuToggle.addEventListener('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            nav.classList.toggle('active');
+            menuToggle.classList.toggle('active');
+        });
+
+        // Close menu when clicking outside
+        document.addEventListener('click', (e) => {
+            if (nav.classList.contains('active') && 
+                !e.target.closest('nav') && 
+                !e.target.closest('.menu-toggle')) {
+                nav.classList.remove('active');
+                menuToggle.classList.remove('active');
+            }
+        });
+    }
 }
 
 // Active Section Tracking
@@ -231,30 +273,6 @@ scrollTopBtn.addEventListener('click', () => {
     }
 
     requestAnimationFrame(scrollToTop);
-});
-
-// Menu Toggle
-const menuToggle = document.querySelector('.menu-toggle');
-
-menuToggle.addEventListener('click', () => {
-    menuToggle.classList.toggle('active');
-    nav.classList.toggle('active');
-});
-
-// Close menu when clicking outside
-document.addEventListener('click', (e) => {
-    if (!nav.contains(e.target) && !menuToggle.contains(e.target)) {
-        menuToggle.classList.remove('active');
-        nav.classList.remove('active');
-    }
-});
-
-// Close menu when clicking a link
-document.querySelectorAll('nav ul li a').forEach(link => {
-    link.addEventListener('click', () => {
-        menuToggle.classList.remove('active');
-        nav.classList.remove('active');
-    });
 });
 
 // Initialize everything when DOM is loaded

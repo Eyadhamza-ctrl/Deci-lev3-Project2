@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dynamic Sections with Comments</title>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
   <script src="js/script.js" defer></script>
 </head>
 <body>
@@ -17,24 +16,24 @@
   <div class="background-circle-5"></div>
   <div class="background-circle-6"></div>
   <header>
+    <div class="menu-toggle">
+        <span></span>
+        <span></span>
+        <span></span>
+    </div>
     <nav>
-      <div class="menu-toggle">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <ul id="navbar">
-        <li><a href="#section1">Humans vs. A.I</a></li>
-        <li><a href="#section2">Pyramid of Giza</a></li>
-        <li><a href="#section3">Big data</a></li>
-        <li><a href="#section4">Swimming</a></li>
-        <li><a href="#comments-section">Comments</a></li>
-      </ul>
+        <ul id="navbar">
+            <li><a href="#section1">Humans vs. A.I</a></li>
+            <li><a href="#section2">Exploring the Great Pyramid of Giza</a></li>
+            <li><a href="#section3">Big data</a></li>
+            <li><a href="#section4">Is Swimming a Good Workout?</a></li>
+            <li><a href="#comments-section">Comments</a></li>
+        </ul>
     </nav>
   </header>
 
   <main>
-    <section id="section1" data-name="section 1">
+    <section id="section1" data-name="Humans vs. A.I">
       <div class="content-wrapper">
         <h2>Humans vs. A.I</h2>
         <img src="css/images/Artificial-intelligente-and-consultancy-1200x675.jpg" alt="Artificial Intelligence">
@@ -42,7 +41,7 @@
       <p>At the fascinating intersection between human creativity and the ability of machines to learn, Generative Artificial Intelligence emerges.</p>
     </section>
 
-    <section id="section2" data-name="section 2">
+    <section id="section2" data-name="Exploring the Great Pyramid of Giza">
       <div class="content-wrapper">
         <h2>Exploring the Great Pyramid of Giza</h2>
         <img src="css/images/Camel-and-Pyramids-Trip.jpg" alt="Pyramids and Camel Ride">
@@ -50,7 +49,7 @@
       <p>Rising gloriously on the Giza Plateau, the magnificent achievement of ancient engineering known as the Great Pyramid of Giza stands as an icon of Egypt's rich history.</p>
     </section>
 
-    <section id="section3" data-name="section 3">
+    <section id="section3" data-name="Big data">
       <div class="content-wrapper">
         <h2>Big data</h2>
         <img src="css/images/Medium.webp" alt="Big Data Analytics">
@@ -58,7 +57,7 @@
       <p>Beyond saving time and money, data lakes provide a flexible environment for experimentation and analysis, unlocking new insights and fostering innovation within an organization.</p>
     </section>
 
-    <section id="section4" data-name="section 4">
+    <section id="section4" data-name="Is Swimming a Good Workout?">
       <div class="content-wrapper">
         <h2>Is Swimming a Good Workout?</h2>
         <img src="css/images/virgin-active_homepage_swimming-pools-and-spas-2_january-2025.jpg" alt="Swimming Pool">
@@ -66,7 +65,7 @@
       <p>Swimming is an amazing workout for the whole body. But what exactly makes it so effective?</p>
     </section>
 
-    <section id="comments-section">
+    <section id="comments-section" data-name="Comments">
       <h2>Leave a Comment</h2>
       <form id="commentForm">
         <label for="name">Name:</label>
