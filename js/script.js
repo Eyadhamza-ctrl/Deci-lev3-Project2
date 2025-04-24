@@ -12,40 +12,8 @@ const SCROLL_TO_TOP_THRESHOLD = 300;
 const ANIMATION_DURATION = 800;
 const SCROLL_EASING = 0.1;
 
-// Create empty ul element for navigation if it doesn't exist
-let navList = document.querySelector('nav ul');
-if (!navList) {
-    navList = document.createElement('ul');
-    navList.id = 'navbar';
-    nav.appendChild(navList);
-}
-
 /**
- * Generates navigation menu items dynamically based on section data
- * Creates list items with links for each section using their data-name attribute
- */
-function generateNavigation() {
-    // Clear existing navigation items
-    navList.innerHTML = '';
-    
-    // Create navigation items for each section
-    sections.forEach(section => {
-        const sectionId = section.id;
-        const sectionName = section.getAttribute('data-name');
-        
-        if (sectionName) {
-            const listItem = document.createElement('li');
-            const link = document.createElement('a');
-            link.href = `#${sectionId}`;
-            link.textContent = sectionName;
-            listItem.appendChild(link);
-            navList.appendChild(listItem);
-        }
-    });
-}
-
-/**
- * Smoothly scrolls to a target element with easing
+ * Smoothly scrolls to a target element with easing animation
  * @param {HTMLElement} target - Target element to scroll to
  * @param {number} offset - Additional offset from the top
  */
@@ -75,6 +43,62 @@ function smoothScrollTo(target, offset = 0) {
 }
 
 /**
+ * Generates navigation menu items dynamically based on section data
+ * Creates list items with links for each section using their h2 text or data-name attribute
+ */
+function generateNavigation() {
+    // Get or create the navigation list
+    let navList = document.querySelector('nav ul');
+    if (!navList) {
+        navList = document.createElement('ul');
+        navList.id = 'navbar';
+        nav.appendChild(navList);
+    }
+
+    // Clear existing navigation items
+    navList.innerHTML = '';
+    
+    // Create navigation items for each section
+    sections.forEach(section => {
+        // Get section title from h2 element or data-name attribute
+        const sectionTitle = section.querySelector('h2')?.textContent || section.getAttribute('data-name');
+        const sectionId = section.id;
+        
+        if (sectionTitle && sectionId) {
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            
+            // Set link attributes
+            link.href = `#${sectionId}`;
+            link.textContent = sectionTitle;
+            link.setAttribute('data-section', sectionId);
+            
+            // Add click event for smooth scrolling
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetSection = document.querySelector(`#${sectionId}`);
+                if (targetSection) {
+                    smoothScrollTo(targetSection, nav.offsetHeight + SCROLL_OFFSET);
+                    
+                    // Update active state
+                    document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active'));
+                    listItem.classList.add('active');
+                    
+                    // Close mobile menu if open
+                    if (nav.classList.contains('active')) {
+                        nav.classList.remove('active');
+                        menuToggle.classList.remove('active');
+                    }
+                }
+            });
+            
+            listItem.appendChild(link);
+            navList.appendChild(listItem);
+        }
+    });
+}
+
+/**
  * Sets up navigation functionality including:
  * - Dynamic menu generation
  * - Smooth scrolling to sections
@@ -85,37 +109,6 @@ function setupNavigation() {
     // Generate navigation items
     generateNavigation();
     
-    // Get all navigation links after generation
-    const navLinks = document.querySelectorAll('nav ul li a');
-    
-    // Handle desktop navigation
-    navLinks.forEach(link => {
-        link.addEventListener('click', (e) => {
-            e.preventDefault();
-            const targetId = link.getAttribute('href');
-            const targetSection = document.querySelector(targetId);
-            
-            if (targetSection) {
-                // Calculate scroll position with proper offset
-                const navHeight = nav.offsetHeight;
-                const scrollPosition = targetSection.offsetTop - navHeight - SCROLL_OFFSET;
-                
-                // Use custom smooth scroll
-                smoothScrollTo(targetSection, navHeight + SCROLL_OFFSET);
-                
-                // Update active section
-                document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active'));
-                link.parentElement.classList.add('active');
-                
-                // Close mobile menu if open
-                if (nav.classList.contains('active')) {
-                    nav.classList.remove('active');
-                    menuToggle.classList.remove('active');
-                }
-            }
-        });
-    });
-
     // Handle mobile menu toggle
     if (menuToggle) {
         menuToggle.addEventListener('click', (e) => {
