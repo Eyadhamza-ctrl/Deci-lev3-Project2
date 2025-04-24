@@ -13,6 +13,11 @@ html {
     --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     --gradient: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    --gradient-2: linear-gradient(45deg, #ff6b6b, #ff8e8e);
+    --gradient-3: linear-gradient(225deg, #4ecdc4, #45b7af);
+    --gradient-4: linear-gradient(90deg, #a78bfa, #8b5cf6);
+    --gradient-5: linear-gradient(180deg, #f472b6, #ec4899);
+    --gradient-6: linear-gradient(270deg, #34d399, #10b981);
 }
 
 body {
@@ -22,6 +27,132 @@ body {
     background-color: var(--background-color);
     color: var(--text-color);
     line-height: 1.6;
+    position: relative;
+    overflow-x: hidden;
+    min-height: 100vh;
+}
+
+/* Animated Background Shapes */
+body::before,
+body::after,
+.background-circle-1,
+.background-circle-2,
+.background-circle-3,
+.background-circle-4,
+.background-circle-5,
+.background-circle-6 {
+    content: '';
+    position: fixed;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    opacity: 0.15;
+    z-index: -1;
+    animation: float 8s infinite alternate;
+    mix-blend-mode: multiply;
+}
+
+body::before {
+    top: -250px;
+    left: -250px;
+    background: var(--gradient-2);
+    animation-delay: 0s;
+}
+
+body::after {
+    bottom: -250px;
+    right: -250px;
+    background: var(--gradient-3);
+    animation-delay: 2s;
+}
+
+.background-circle-1 {
+    top: 15%;
+    left: 10%;
+    background: var(--gradient-4);
+    animation-delay: 1s;
+    width: 550px;
+    height: 550px;
+}
+
+.background-circle-2 {
+    top: 70%;
+    right: 10%;
+    background: var(--gradient-5);
+    animation-delay: 3s;
+    width: 500px;
+    height: 500px;
+}
+
+.background-circle-3 {
+    bottom: 15%;
+    left: 40%;
+    background: var(--gradient-6);
+    animation-delay: 4s;
+    width: 480px;
+    height: 480px;
+}
+
+.background-circle-4 {
+    top: 40%;
+    right: 40%;
+    background: var(--gradient);
+    animation-delay: 5s;
+    width: 420px;
+    height: 420px;
+}
+
+.background-circle-5 {
+    top: 85%;
+    left: 80%;
+    background: var(--gradient-2);
+    animation-delay: 6s;
+    width: 450px;
+    height: 450px;
+}
+
+.background-circle-6 {
+    top: 25%;
+    right: 35%;
+    background: var(--gradient-3);
+    animation-delay: 7s;
+    width: 470px;
+    height: 470px;
+}
+
+@keyframes float {
+    0% {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+    25% {
+        transform: translate(50px, 50px) rotate(90deg) scale(1.2);
+    }
+    50% {
+        transform: translate(0, 100px) rotate(180deg) scale(1);
+    }
+    75% {
+        transform: translate(-50px, 50px) rotate(270deg) scale(0.8);
+    }
+    100% {
+        transform: translate(0, 0) rotate(360deg) scale(1);
+    }
+}
+
+/* Add the background circles to the body */
+body {
+    position: relative;
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle at center, transparent 0%, rgba(255, 255, 255, 0.3) 100%);
+    pointer-events: none;
+    z-index: -1;
 }
 
 /* Navigation styles */
@@ -36,7 +167,7 @@ nav {
     z-index: 1000;
     box-shadow: var(--shadow);
     height: auto;
-    min-height: 80px;
+    min-height: 40px;
 }
 
 nav ul {
@@ -81,6 +212,41 @@ nav ul li.active a {
     background: rgba(37, 99, 235, 0.1);
 }
 
+/* Mobile Menu Toggle */
+.menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 30px;
+    height: 20px;
+    cursor: pointer;
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    z-index: 1001;
+}
+
+.menu-toggle span {
+    display: block;
+    width: 100%;
+    height: 3px;
+    background: var(--primary-color);
+    border-radius: 3px;
+    transition: var(--transition);
+}
+
+.menu-toggle.active span:nth-child(1) {
+    transform: translateY(8px) rotate(45deg);
+}
+
+.menu-toggle.active span:nth-child(2) {
+    opacity: 0;
+}
+
+.menu-toggle.active span:nth-child(3) {
+    transform: translateY(-8px) rotate(-45deg);
+}
+
 /* Scroll to Top Button */
 .scroll-top {
     position: fixed;
@@ -88,14 +254,14 @@ nav ul li.active a {
     right: 30px;
     background: var(--gradient);
     color: var(--white);
-    width: 45px;
-    height: 45px;
+    width: 50px;
+    height: 50px;
     border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    box-shadow: var(--shadow);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 0;
     visibility: hidden;
@@ -104,6 +270,7 @@ nav ul li.active a {
     border: none;
     font-size: 1.2rem;
     font-weight: bold;
+    will-change: transform, opacity;
 }
 
 .scroll-top.visible {
@@ -114,17 +281,36 @@ nav ul li.active a {
 
 .scroll-top:hover {
     transform: translateY(-5px) scale(1.1);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    background: var(--gradient-2);
 }
 
 .scroll-top:active {
     transform: translateY(0) scale(0.95);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.scroll-top::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    border-radius: 50%;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.scroll-top:hover::before {
+    opacity: 1;
 }
 
 /* Main content */
 main {
-    margin-top: 100px;
-    padding: 2rem;
+    margin-top: 80px;
+    padding: 1.5rem;
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
@@ -133,34 +319,56 @@ main {
 /* Section styles */
 section {
     background-color: var(--white);
-    padding: 2.5rem;
-    margin-bottom: 2.5rem;
-    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    border-radius: 12px;
     box-shadow: var(--shadow);
     transition: var(--transition);
     border: 1px solid rgba(37, 99, 235, 0.1);
+    position: relative;
+    overflow: hidden;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: var(--gradient);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.5s ease;
+}
+
+section:hover::before {
+    transform: scaleX(1);
 }
 
 section .content-wrapper {
     display: flex;
     align-items: flex-start;
-    gap: 2rem;
-    margin-bottom: 1.5rem;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 section h2 {
     flex: 1;
     margin: 0;
-    font-size: 2rem;
+    font-size: 1.5rem;
     color: var(--text-color);
     font-weight: 700;
     line-height: 1.2;
 }
 
 section img {
-    width: 300px;
+    width: 200px;
     height: auto;
-    border-radius: 12px;
+    border-radius: 8px;
     box-shadow: var(--shadow);
     transition: var(--transition);
     object-fit: cover;
@@ -174,12 +382,13 @@ section img:hover {
 section p {
     margin: 0;
     color: var(--text-color);
-    line-height: 1.6;
+    line-height: 1.5;
+    font-size: 0.95rem;
 }
 
 section:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 12px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
 }
 
 /* Form styles */
@@ -202,6 +411,7 @@ input, textarea {
     font-size: 1rem;
     transition: var(--transition);
     background: #f8fafc;
+    position: relative;
 }
 
 input:focus, textarea:focus {
@@ -222,6 +432,23 @@ button {
     transition: var(--transition);
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: 0.5s;
+}
+
+button:hover::before {
+    left: 100%;
 }
 
 button:hover {
@@ -248,6 +475,25 @@ button:hover {
     transition: var(--transition);
     margin-bottom: 1.5rem;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.comment::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: var(--gradient);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    z-index: -1;
+}
+
+.comment:hover::before {
+    opacity: 0.05;
 }
 
 .comment:hover {
@@ -281,14 +527,28 @@ h3 {
 
 /* Responsive design */
 @media (max-width: 768px) {
+    .menu-toggle {
+        display: flex;
+    }
+
     nav {
-        padding: 0.5rem;
+        padding: 0;
+        height: 100vh;
+        width: 100%;
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        background: rgba(255, 255, 255, 0.98);
+    }
+
+    nav.active {
+        transform: translateX(0);
     }
 
     nav ul {
         flex-direction: column;
         align-items: center;
-        gap: 0.5rem;
+        padding: 2rem;
+        gap: 1.5rem;
     }
 
     nav ul li {
@@ -298,31 +558,66 @@ h3 {
 
     nav ul li a {
         display: block;
-        padding: 0.8rem;
-        width: 100%;
+        padding: 1rem;
+        font-size: 1.1rem;
+    }
+
+    nav ul li a::after {
+        display: none;
+    }
+
+    nav ul li.active a {
+        background: var(--gradient);
+        color: var(--white);
+    }
+
+    main {
+        margin-top: 60px;
+    }
+
+    body::before,
+    body::after,
+    .background-circle-1,
+    .background-circle-2,
+    .background-circle-3,
+    .background-circle-4,
+    .background-circle-5,
+    .background-circle-6 {
+        width: 500px;
+        height: 500px;
+        opacity: 0.12;
     }
 
     .scroll-top {
-        width: 40px;
-        height: 40px;
+        width: 45px;
+        height: 45px;
+        bottom: 20px;
+        right: 20px;
         font-size: 1.1rem;
-        bottom: 25px;
-        right: 25px;
     }
 
     main {
         padding: 1rem;
     }
     
+    section {
+        padding: 1.2rem;
+        margin-bottom: 1.2rem;
+    }
+    
     section .content-wrapper {
         flex-direction: column;
-        gap: 1.5rem;
+        gap: 1rem;
     }
 
     section img {
         width: 100%;
-        max-width: 300px;
+        max-width: 200px;
         margin: 0 auto;
+    }
+
+    section h2 {
+        font-size: 1.3rem;
     }
 }
 
@@ -340,12 +635,25 @@ h3 {
         font-size: 0.9rem;
     }
 
+    body::before,
+    body::after,
+    .background-circle-1,
+    .background-circle-2,
+    .background-circle-3,
+    .background-circle-4,
+    .background-circle-5,
+    .background-circle-6 {
+        width: 400px;
+        height: 400px;
+        opacity: 0.1;
+    }
+
     .scroll-top {
-        width: 35px;
-        height: 35px;
+        width: 40px;
+        height: 40px;
+        bottom: 15px;
+        right: 15px;
         font-size: 1rem;
-        bottom: 20px;
-        right: 20px;
     }
 
     main {
@@ -353,7 +661,16 @@ h3 {
     }
 
     section {
-        padding: 1.2rem;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    section h2 {
+        font-size: 1.2rem;
+    }
+
+    section p {
+        font-size: 0.9rem;
     }
 
     .comment {

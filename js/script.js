@@ -190,45 +190,72 @@ function addComment(name, email, comment) {
 }
 
 // Scroll to Top Button
-function addScrollToTop() {
-    const button = document.createElement('button');
-    button.innerHTML = '↑';
-    button.className = 'scroll-top';
-    document.body.appendChild(button);
+const scrollTopBtn = document.createElement('button');
+scrollTopBtn.className = 'scroll-top';
+scrollTopBtn.innerHTML = '↑';
+scrollTopBtn.setAttribute('aria-label', 'Scroll to top');
+document.body.appendChild(scrollTopBtn);
 
-    function toggleScrollButton() {
-        if (window.pageYOffset > 300) {
-            button.classList.add('visible');
+// Show/hide scroll to top button with smooth transition
+let scrollTimeout;
+window.addEventListener('scroll', () => {
+    clearTimeout(scrollTimeout);
+    scrollTimeout = setTimeout(() => {
+        if (window.scrollY > 300) {
+            scrollTopBtn.classList.add('visible');
         } else {
-            button.classList.remove('visible');
+            scrollTopBtn.classList.remove('visible');
+        }
+    }, 100);
+});
+
+// Smooth scroll to top with easing
+scrollTopBtn.addEventListener('click', () => {
+    const startPosition = window.scrollY;
+    const startTime = performance.now();
+    const duration = 800; // milliseconds
+
+    function scrollToTop(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Easing function for smooth deceleration
+        const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+        const easedProgress = easeOutCubic(progress);
+        
+        window.scrollTo(0, startPosition * (1 - easedProgress));
+        
+        if (progress < 1) {
+            requestAnimationFrame(scrollToTop);
         }
     }
 
-    // Throttle the scroll event for better performance
-    let ticking = false;
-    window.addEventListener('scroll', () => {
-        if (!ticking) {
-            window.requestAnimationFrame(() => {
-                toggleScrollButton();
-                ticking = false;
-            });
-            ticking = true;
-        }
-    });
+    requestAnimationFrame(scrollToTop);
+});
 
-    toggleScrollButton();
+// Menu Toggle
+const menuToggle = document.querySelector('.menu-toggle');
 
-    button.addEventListener('click', () => {
-        const scrollToTop = () => {
-            const currentPosition = window.pageYOffset;
-            if (currentPosition > 0) {
-                window.requestAnimationFrame(scrollToTop);
-                window.scrollTo(0, currentPosition - currentPosition / 8);
-            }
-        };
-        scrollToTop();
+menuToggle.addEventListener('click', () => {
+    menuToggle.classList.toggle('active');
+    nav.classList.toggle('active');
+});
+
+// Close menu when clicking outside
+document.addEventListener('click', (e) => {
+    if (!nav.contains(e.target) && !menuToggle.contains(e.target)) {
+        menuToggle.classList.remove('active');
+        nav.classList.remove('active');
+    }
+});
+
+// Close menu when clicking a link
+document.querySelectorAll('nav ul li a').forEach(link => {
+    link.addEventListener('click', () => {
+        menuToggle.classList.remove('active');
+        nav.classList.remove('active');
     });
-}
+});
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
@@ -236,5 +263,4 @@ document.addEventListener('DOMContentLoaded', function() {
     setupNavigation();
     handleActiveSection();
     handleCommentForm();
-    addScrollToTop();
 });
