@@ -1,0 +1,240 @@
+// DOM Elements
+const nav = document.querySelector('nav');
+const sections = document.querySelectorAll('main section');
+const navLinks = document.querySelectorAll('nav ul li a');
+const commentForm = document.getElementById('commentForm');
+const commentList = document.getElementById('commentList');
+const errorElement = document.getElementById('error');
+
+// Debug logging
+console.log('DOM Elements:', {
+    commentForm,
+    commentList,
+    errorElement
+});
+
+// Constants
+const SCROLL_OFFSET = 100;
+const SCROLL_TO_TOP_THRESHOLD = 300;
+const ANIMATION_DURATION = 300;
+
+// Navigation and Scrolling
+function setupNavigation() {
+    $(document).ready(function() {
+        $('nav a').on('click', function(e) {
+            e.preventDefault();
+            var target = $(this).attr('href');
+            var navHeight = $('nav').outerHeight();
+            
+            $('html, body').animate({
+                scrollTop: $(target).offset().top - navHeight
+            }, 800);
+        });
+    });
+}
+
+// Active Section Tracking
+function handleActiveSection() {
+    function updateActiveSection() {
+        const headerHeight = nav.offsetHeight;
+        const scrollPosition = window.scrollY;
+
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - headerHeight - SCROLL_OFFSET;
+            const sectionBottom = sectionTop + section.offsetHeight;
+
+            if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+                sections.forEach(s => s.classList.remove('active-section'));
+                navLinks.forEach(link => link.parentElement.classList.remove('active'));
+
+                section.classList.add('active-section');
+                const correspondingLink = document.querySelector(`nav a[href="#${section.id}"]`);
+                if (correspondingLink) {
+                    correspondingLink.parentElement.classList.add('active');
+                }
+            }
+        });
+    }
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                updateActiveSection();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+
+    updateActiveSection();
+}
+
+// Comment Form Handling
+function handleCommentForm() {
+    if (!commentForm) {
+        console.error('Comment form not found!');
+        return;
+    }
+
+    console.log('Setting up comment form handler');
+    
+    commentForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        console.log('Form submitted');
+
+        const name = document.getElementById('name').value.trim();
+        const email = document.getElementById('email').value.trim();
+        const comment = document.getElementById('comment').value.trim();
+
+        console.log('Form values:', { name, email, comment });
+
+        if (!name || !email || !comment) {
+            showError('All fields are required.');
+            return;
+        }
+
+        if (!isValidEmail(email)) {
+            showError('Please enter a valid email address.');
+            return;
+        }
+
+        addComment(name, email, comment);
+        commentForm.reset();
+        if (errorElement) {
+            errorElement.textContent = '';
+        }
+    });
+}
+
+// Helper Functions
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function showError(message) {
+    console.log('Showing error:', message);
+    if (!errorElement) {
+        console.error('Error element not found!');
+        return;
+    }
+    errorElement.textContent = message;
+    errorElement.style.display = 'block';
+    errorElement.style.opacity = '1';
+    setTimeout(() => {
+        errorElement.style.opacity = '0';
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 300);
+    }, 3000);
+}
+
+function addComment(name, email, comment) {
+    console.log('Adding comment:', { name, email, comment });
+    
+    if (!commentList) {
+        console.error('Comment list not found!');
+        return;
+    }
+
+    // Create comment container
+    const commentDiv = document.createElement('div');
+    commentDiv.className = 'comment';
+    
+    // Get current date
+    const date = new Date().toLocaleDateString();
+    
+    // Create comment HTML
+    const commentHTML = `
+        <div class="comment-header">
+            <strong>${name}</strong>
+            <span class="email">(${email})</span>
+            <span class="date">${date}</span>
+        </div>
+        <div class="comment-content">
+            <p>${comment}</p>
+        </div>
+    `;
+    
+    // Set the HTML content
+    commentDiv.innerHTML = commentHTML;
+
+    // Add animation styles
+    commentDiv.style.opacity = '0';
+    commentDiv.style.transform = 'translateX(-20px)';
+    
+    // Create comments container if it doesn't exist
+    let commentsContainer = commentList.querySelector('.comments-container');
+    if (!commentsContainer) {
+        commentsContainer = document.createElement('div');
+        commentsContainer.className = 'comments-container';
+        // Insert after the h3 element
+        const h3 = commentList.querySelector('h3');
+        if (h3) {
+            commentList.insertBefore(commentsContainer, h3.nextSibling);
+        } else {
+            commentList.appendChild(commentsContainer);
+        }
+    }
+    
+    // Add the comment to the container
+    commentsContainer.insertBefore(commentDiv, commentsContainer.firstChild);
+    console.log('Comment added to container:', commentsContainer);
+
+    // Trigger animation
+    requestAnimationFrame(() => {
+        commentDiv.style.transition = `all ${ANIMATION_DURATION}ms ease`;
+        commentDiv.style.opacity = '1';
+        commentDiv.style.transform = 'translateX(0)';
+    });
+}
+
+// Scroll to Top Button
+function addScrollToTop() {
+    const button = document.createElement('button');
+    button.innerHTML = '↑';
+    button.className = 'scroll-top';
+    document.body.appendChild(button);
+
+    function toggleScrollButton() {
+        if (window.pageYOffset > 300) {
+            button.classList.add('visible');
+        } else {
+            button.classList.remove('visible');
+        }
+    }
+
+    // Throttle the scroll event for better performance
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                toggleScrollButton();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    });
+
+    toggleScrollButton();
+
+    button.addEventListener('click', () => {
+        const scrollToTop = () => {
+            const currentPosition = window.pageYOffset;
+            if (currentPosition > 0) {
+                window.requestAnimationFrame(scrollToTop);
+                window.scrollTo(0, currentPosition - currentPosition / 8);
+            }
+        };
+        scrollToTop();
+    });
+}
+
+// Initialize everything when DOM is loaded
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, initializing...');
+    setupNavigation();
+    handleActiveSection();
+    handleCommentForm();
+    addScrollToTop();
+});
