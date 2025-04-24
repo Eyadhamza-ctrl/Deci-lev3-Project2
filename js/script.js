@@ -1,39 +1,120 @@
 // DOM Elements
 const nav = document.querySelector('nav');
 const sections = document.querySelectorAll('main section');
-const navLinks = document.querySelectorAll('nav ul li a');
 const commentForm = document.getElementById('commentForm');
 const commentList = document.getElementById('commentList');
 const errorElement = document.getElementById('error');
 const menuToggle = document.querySelector('.menu-toggle');
 
-// Debug logging
-console.log('DOM Elements:', {
-    commentForm,
-    commentList,
-    errorElement,
-    menuToggle
-});
-
 // Constants
 const SCROLL_OFFSET = 100;
 const SCROLL_TO_TOP_THRESHOLD = 300;
-const ANIMATION_DURATION = 300;
+const ANIMATION_DURATION = 800;
+const SCROLL_EASING = 0.1;
 
-// Navigation and Scrolling
-function setupNavigation() {
-    $(document).ready(function() {
-        $('nav a').on('click', function(e) {
-            e.preventDefault();
-            var target = $(this).attr('href');
-            var navHeight = $('nav').outerHeight();
+// Create empty ul element for navigation if it doesn't exist
+let navList = document.querySelector('nav ul');
+if (!navList) {
+    navList = document.createElement('ul');
+    navList.id = 'navbar';
+    nav.appendChild(navList);
+}
 
-            $('html, body').animate({
-                scrollTop: $(target).offset().top - navHeight
-            }, 800);
-        });
+/**
+ * Generates navigation menu items dynamically based on section data
+ * Creates list items with links for each section using their data-name attribute
+ */
+function generateNavigation() {
+    // Clear existing navigation items
+    navList.innerHTML = '';
+    
+    // Create navigation items for each section
+    sections.forEach(section => {
+        const sectionId = section.id;
+        const sectionName = section.getAttribute('data-name');
+        
+        if (sectionName) {
+            const listItem = document.createElement('li');
+            const link = document.createElement('a');
+            link.href = `#${sectionId}`;
+            link.textContent = sectionName;
+            listItem.appendChild(link);
+            navList.appendChild(listItem);
+        }
     });
 }
+
+/**
+ * Smoothly scrolls to a target element with easing
+ * @param {HTMLElement} target - Target element to scroll to
+ * @param {number} offset - Additional offset from the top
+ */
+function smoothScrollTo(target, offset = 0) {
+    const startPosition = window.scrollY;
+    const targetPosition = target.offsetTop - offset;
+    const distance = targetPosition - startPosition;
+    let startTime = null;
+
+    function animation(currentTime) {
+        if (startTime === null) startTime = currentTime;
+        const timeElapsed = currentTime - startTime;
+        const progress = Math.min(timeElapsed / ANIMATION_DURATION, 1);
+        
+        // Easing function for smooth deceleration
+        const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+        const easedProgress = easeOutCubic(progress);
+        
+        window.scrollTo(0, startPosition + (distance * easedProgress));
+        
+        if (progress < 1) {
+            requestAnimationFrame(animation);
+        }
+    }
+
+    requestAnimationFrame(animation);
+}
+
+/**
+ * Sets up navigation functionality including:
+ * - Dynamic menu generation
+ * - Smooth scrolling to sections
+ * - Active state management
+ * - Mobile menu toggle
+ */
+function setupNavigation() {
+    // Generate navigation items
+    generateNavigation();
+    
+    // Get all navigation links after generation
+    const navLinks = document.querySelectorAll('nav ul li a');
+    
+    // Handle desktop navigation
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('href');
+            const targetSection = document.querySelector(targetId);
+            
+            if (targetSection) {
+                // Calculate scroll position with proper offset
+                const navHeight = nav.offsetHeight;
+                const scrollPosition = targetSection.offsetTop - navHeight - SCROLL_OFFSET;
+                
+                // Use custom smooth scroll
+                smoothScrollTo(targetSection, navHeight + SCROLL_OFFSET);
+                
+                // Update active section
+                document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active'));
+                link.parentElement.classList.add('active');
+                
+                // Close mobile menu if open
+                if (nav.classList.contains('active')) {
+                    nav.classList.remove('active');
+                    menuToggle.classList.remove('active');
+                }
+            }
+        });
+    });
 
     // Handle mobile menu toggle
     if (menuToggle) {
@@ -54,20 +135,28 @@ function setupNavigation() {
             }
         });
     }
+}
 
-// Active Section Tracking
+/**
+ * Tracks and updates the active section based on scroll position
+ * Updates navigation highlight and section visibility
+ */
 function handleActiveSection() {
     function updateActiveSection() {
         const headerHeight = nav.offsetHeight;
         const scrollPosition = window.scrollY;
+        const viewportHeight = window.innerHeight;
 
         sections.forEach(section => {
             const sectionTop = section.offsetTop - headerHeight - SCROLL_OFFSET;
             const sectionBottom = sectionTop + section.offsetHeight;
+            const sectionMiddle = sectionTop + (section.offsetHeight / 2);
 
-            if (scrollPosition >= sectionTop && scrollPosition < sectionBottom) {
+            // Consider section as active if it's in the middle of the viewport
+            if (scrollPosition + (viewportHeight / 2) >= sectionTop && 
+                scrollPosition + (viewportHeight / 2) <= sectionBottom) {
                 sections.forEach(s => s.classList.remove('active-section'));
-                navLinks.forEach(link => link.parentElement.classList.remove('active'));
+                document.querySelectorAll('nav ul li').forEach(li => li.classList.remove('active'));
 
                 section.classList.add('active-section');
                 const correspondingLink = document.querySelector(`nav a[href="#${section.id}"]`);
@@ -92,24 +181,19 @@ function handleActiveSection() {
     updateActiveSection();
 }
 
-// Comment Form Handling
+/**
+ * Handles comment form submission and validation
+ * Validates input fields and adds new comments to the list
+ */
 function handleCommentForm() {
-    if (!commentForm) {
-        console.error('Comment form not found!');
-        return;
-    }
+    if (!commentForm) return;
 
-    console.log('Setting up comment form handler');
-    
     commentForm.addEventListener('submit', function(e) {
         e.preventDefault();
-        console.log('Form submitted');
 
         const name = document.getElementById('name').value.trim();
         const email = document.getElementById('email').value.trim();
         const comment = document.getElementById('comment').value.trim();
-
-        console.log('Form values:', { name, email, comment });
 
         if (!name || !email || !comment) {
             showError('All fields are required.');
@@ -129,17 +213,21 @@ function handleCommentForm() {
     });
 }
 
-// Helper Functions
+/**
+ * Validates email format using regex
+ * @param {string} email - Email address to validate
+ * @returns {boolean} - True if email is valid
+ */
 function isValidEmail(email) {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+/**
+ * Displays error messages with fade animation
+ * @param {string} message - Error message to display
+ */
 function showError(message) {
-    console.log('Showing error:', message);
-    if (!errorElement) {
-        console.error('Error element not found!');
-        return;
-    }
+    if (!errorElement) return;
     errorElement.textContent = message;
     errorElement.style.display = 'block';
     errorElement.style.opacity = '1';
@@ -151,22 +239,20 @@ function showError(message) {
     }, 3000);
 }
 
+/**
+ * Creates and adds a new comment to the comment list
+ * @param {string} name - Commenter's name
+ * @param {string} email - Commenter's email
+ * @param {string} comment - Comment text
+ */
 function addComment(name, email, comment) {
-    console.log('Adding comment:', { name, email, comment });
-    
-    if (!commentList) {
-        console.error('Comment list not found!');
-        return;
-    }
+    if (!commentList) return;
 
-    // Create comment container
     const commentDiv = document.createElement('div');
     commentDiv.className = 'comment';
     
-    // Get current date
     const date = new Date().toLocaleDateString();
     
-    // Create comment HTML
     const commentHTML = `
         <div class="comment-header">
             <strong>${name}</strong>
@@ -178,19 +264,14 @@ function addComment(name, email, comment) {
         </div>
     `;
     
-    // Set the HTML content
     commentDiv.innerHTML = commentHTML;
-
-    // Add animation styles
     commentDiv.style.opacity = '0';
     commentDiv.style.transform = 'translateX(-20px)';
     
-    // Create comments container if it doesn't exist
     let commentsContainer = commentList.querySelector('.comments-container');
     if (!commentsContainer) {
         commentsContainer = document.createElement('div');
         commentsContainer.className = 'comments-container';
-        // Insert after the h3 element
         const h3 = commentList.querySelector('h3');
         if (h3) {
             commentList.insertBefore(commentsContainer, h3.nextSibling);
@@ -199,11 +280,8 @@ function addComment(name, email, comment) {
         }
     }
     
-    // Add the comment to the container
     commentsContainer.insertBefore(commentDiv, commentsContainer.firstChild);
-    console.log('Comment added to container:', commentsContainer);
 
-    // Trigger animation
     requestAnimationFrame(() => {
         commentDiv.style.transition = `all ${ANIMATION_DURATION}ms ease`;
         commentDiv.style.opacity = '1';
@@ -257,7 +335,6 @@ scrollTopBtn.addEventListener('click', () => {
 
 // Initialize everything when DOM is loaded
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('DOM loaded, initializing...');
     setupNavigation();
     handleActiveSection();
     handleCommentForm();
